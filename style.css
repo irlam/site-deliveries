@@ -1,0 +1,369 @@
+/*
+style.css
+----------------------------------------------------------
+Styling for the Construction Site Delivery Management System web app.
+
+- Responsive design for mobile devices
+- Table becomes horizontally scrollable on small screens
+- Styles calendar slots, modals, forms, and multi-slot selection
+- Ensures selected slots are visible at all times
+----------------------------------------------------------
+*/
+
+/* ----------- GENERAL LAYOUT ----------- */
+body {
+    font-family: Arial, sans-serif;
+    margin: 2vw;
+    background: #f5f5f5;
+    color: #191c22;
+    font-size: 1rem;
+    transition: background 0.2s, color 0.2s;
+}
+
+h1 {
+    color: #0a4780;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
+
+section {
+    background: #fff;
+    padding: 1em;
+    margin-bottom: 1.5em;
+    border-radius: 8px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+    transition: background 0.2s;
+}
+
+label {
+    display: block;
+    margin: 0.4em 0;
+    font-size: 1em;
+}
+
+input[type="text"],
+input[type="datetime-local"],
+select {
+    width: 100%;
+    padding: 0.5em;
+    font-size: 1em;
+    margin-top: 0.15em;
+    box-sizing: border-box;
+    background: #fff;
+    color: #191c22;
+    border: 1px solid #b9c5d3;
+    border-radius: 4px;
+    transition: background 0.2s, color 0.2s;
+}
+
+input:focus, select:focus {
+    outline: 2px solid #1465a0;
+    background: #e0eaf3;
+}
+
+/* IMPORTANT: don't override Bootstrap .btns */
+button:not(.btn) {
+    margin-top: .8em;
+    padding: .6em 1.5em;
+    font-size: 1em;
+    background-color: #0a4780;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+button:not(.btn):hover,
+button:not(.btn):focus {
+    background-color: #1465a0;
+}
+
+#formMsg {
+    margin-top: 0.7em;
+    color: green;
+    font-size: 1em;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 0.7em;
+    background: #fafbfc;
+    font-size: 0.98em;
+}
+
+th, td {
+    padding: 0.6em 0.4em;
+    text-align: left;
+    min-width: 110px;
+}
+
+th {
+    background: #e0eaf3;
+}
+
+tr:nth-child(even) {
+    background: #f4f8fb;
+}
+
+/* ----------- CALENDAR TABLE ----------- */
+.modern-calendar-container {
+    max-width: 100vw;
+    overflow-x: auto;
+    background: #f7fafd;
+    border-radius: 18px;
+    box-shadow: 0 4px 18px rgba(80,100,130,0.08);
+    border: 1px solid #e0eaf3;
+    margin: 0 auto 1.5em auto;
+    padding: 1em 0.5em 1em 0.5em;
+}
+
+.modern-calendar-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 1em;
+    background: transparent;
+    position: relative;
+}
+
+/* Sticky header */
+.modern-calendar-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: #e8f0fa;
+    color: #0a4780;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    padding: 0.7em 0.2em;
+    text-align: center;
+    border-bottom: 2px solid #c7d5e2;
+}
+
+/* Today */
+.modern-calendar-table thead th.today {
+    background: #cde5f7;
+    color: #184a7e;
+    border-radius: 9px 9px 0 0;
+    border-bottom: 2px solid #9cc8e1;
+}
+
+.modern-calendar-table td, .modern-calendar-table th {
+    min-width: 105px;
+    text-align: center;
+    border: none;
+}
+
+.modern-calendar-table td {
+    padding: 7px 2px;
+    border-radius: 7px;
+    background: #fff;
+    transition: box-shadow 0.14s, background 0.14s;
+    box-shadow: 0 1px 2px rgba(60,80,110,0.04);
+    cursor: pointer;
+    border: 1px solid transparent;
+}
+
+.modern-calendar-table td.slot-free {
+    background: #eaf7ef;
+    color: #206330;
+    border: 1px dashed #b1ddb9;
+}
+.modern-calendar-table td.slot-free:hover, .modern-calendar-table td.slot-free:focus {
+    background: #d3f4de;
+    border: 1.5px solid #5dc491;
+    box-shadow: 0 2px 6px rgba(62,150,90,0.07);
+    outline: none;
+}
+
+.modern-calendar-table td.slot-booked {
+    background: #eaf0fa;
+    color: #24508c;
+    border: 1px solid #b4c7e6;
+    font-weight: 600;
+}
+.modern-calendar-table td.slot-booked:hover, .modern-calendar-table td.slot-booked:focus {
+    background: #cde1fa;
+    border: 1.5px solid #6fa4e7;
+    box-shadow: 0 2px 6px rgba(40,90,180,0.08);
+    outline: none;
+}
+
+/* Icons */
+.modern-calendar-table td.slot-booked .slot-icon {
+    font-size: 1.2em;
+    margin-right: 0.18em;
+    vertical-align: middle;
+}
+.modern-calendar-table td.slot-free .slot-icon {
+    font-size: 1.1em;
+    margin-right: 0.18em;
+    vertical-align: middle;
+    color: #91c9a2;
+}
+
+/* Sticky time column */
+.modern-calendar-table .time-col {
+    background: #f4f6fa;
+    font-weight: 500;
+    color: #7b8aa0;
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    border-radius: 8px;
+    min-width: 72px;
+}
+
+/* Drag-over highlight */
+.modern-calendar-table td.drag-over {
+    outline: 2px dashed #4097d5;
+}
+
+/* ----------- MULTI-SLOT SELECTION ----------- */
+.modern-calendar-table td.selected-slot {
+    background: #36a7ce !important;
+    border: 2px solid #227c98 !important;
+    color: #fff !important;
+    box-shadow: 0 0 6px #36a7ce88;
+    z-index: 10;
+    position: relative;
+}
+
+.calendar-multi-select-bar {
+    padding: 0.5em 0.8em;
+    background: #d1f0ff;
+    color: #1d5273;
+    border-radius: 7px;
+    box-shadow: 0 1px 4px #7ee2ff44;
+    margin: 0.7em 0 0.6em 0;
+    font-size: 1.02em;
+    display: flex;
+    align-items: center;
+    gap: 1em;
+}
+.calendar-multi-select-bar button {
+    margin: 0 0.2em;
+    background: #2a9ec9;
+    color: #fff;
+    border: none;
+    padding: 0.3em 1.1em;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+}
+.calendar-multi-select-bar button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* ----------- MODALS & SLIDE-UP FORMS ----------- */
+.modal-bg {
+    display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.5); z-index:1000;
+    justify-content:center; align-items:center;
+}
+.modal { background:#fff; padding:1em; border-radius:8px; min-width:250px; max-width:90vw; }
+.modal-close { float:right; cursor:pointer; color:#888; font-size:1.3em; }
+
+#slideBookingFormBg {
+    display: none;
+    position: fixed;
+    left: 0; right: 0; bottom: 0; top: 0;
+    background: rgba(20,30,38,0.32);
+    z-index: 2000;
+    justify-content: flex-end;
+    align-items: flex-end;
+    transition: background 0.2s;
+}
+#slideBookingForm {
+    background: #fff;
+    max-width: 100vw; width: 100%;
+    border-radius: 18px 18px 0 0;
+    box-shadow: 0 -2px 18px #0002;
+    padding: 1.1em 1.2em 1.6em 1.2em;
+    position: relative;
+    animation: slideup 0.27s cubic-bezier(.4,1.6,.4,1);
+}
+@keyframes slideup { from { transform: translateY(100%);} to { transform: translateY(0);} }
+#slideBookingForm .close-btn {
+    position: absolute;
+    right: 1em; top: 1em;
+    font-size: 1.5em;
+    color: #1678a7;
+    background: none; border: none;
+    cursor: pointer;
+}
+@media (min-width: 700px) {
+    #slideBookingForm { max-width: 460px; margin: 0 auto; border-radius: 18px; }
+}
+
+/* ----------- RESPONSIVE DESIGN FOR MOBILE ----------- */
+@media (max-width: 700px) {
+    body { margin: 2vw 1vw; font-size: 1em; }
+    section { padding: 0.7em 0.4em; }
+    input[type="text"], input[type="datetime-local"], select { font-size: 1em; padding: 0.45em; }
+    button { width: 100%; font-size: 1em; }
+    table, thead, tbody, th, td, tr { display: block; }
+    thead tr { display: none; }
+    tr { margin-bottom: 1em; border-bottom: 2px solid #e0eaf3; }
+    td { position: relative; padding-left: 48%; min-width: unset; border: none; }
+    td:before {
+        position: absolute; left: 0.7em; top: 0.5em;
+        white-space: nowrap; font-weight: bold; color: #0a4780; font-size: 0.97em;
+    }
+    td:nth-of-type(1):before { content: "Supplier"; }
+    td:nth-of-type(2):before { content: "Material"; }
+    td:nth-of-type(3):before { content: "Quantity"; }
+    td:nth-of-type(4):before { content: "Driver"; }
+    td:nth-of-type(5):before { content: "Vehicle"; }
+    td:nth-of-type(6):before { content: "Due Date/Time"; }
+    td:nth-of-type(7):before { content: "Unloading Method"; }
+    td:nth-of-type(8):before { content: "Status"; }
+    .modal { min-width:unset; }
+}
+
+/* Public dark theme */
+.theme-dark{
+  --bg:#0b1220; --card:#111827; --muted:#94a3b8; --text:#e5e7eb; --accent:#0ea5e9; --border:#1f2937;
+  background:var(--bg); color:var(--text);
+}
+.theme-dark .modern-calendar-container,
+.theme-dark .table,
+.theme-dark .card,
+.theme-dark .alert,
+.theme-dark .modal-content{
+  background:var(--card) !important; color:var(--text) !important; border-color:var(--border) !important;
+}
+.theme-dark .table thead, .theme-dark .calendar-table thead th{ background:#0f172a !important; color:#dbeafe !important; border-color:var(--border) !important; }
+
+/* Narrowed so Bootstrap variants keep their colors */
+.theme-dark .btn:not(.btn-primary):not(.btn-success):not(.btn-outline-primary):not(.btn-outline-secondary):not(.btn-warning):not(.btn-danger):not(.btn-info) {
+  color:#e5e7eb; border-color:#334155; background:#0f172a;
+}
+
+.theme-dark .btn-primary{ background:var(--accent); border-color:transparent; color:#fff; }
+.theme-dark a{ color:#93c5fd; }
+.theme-dark .table-striped>tbody>tr:nth-of-type(odd)>*{ color:var(--text); background:#0e1524; }
+.theme-dark .table-light{ --bs-table-color: #e5e7eb; --bs-table-bg: #0f172a; --bs-table-border-color: var(--border); }
+.theme-dark input, .theme-dark select, .theme-dark textarea{
+  background:#0f172a !important; color:#e5e7eb !important; border:1px solid var(--border) !important;
+}
+.theme-dark .calendar-table td.slot-free{ background:linear-gradient(135deg,#12301f 90%,#0d2b1b 100%); border:1.5px dashed #1d4d33; color:#d1fae5; }
+.theme-dark .calendar-table td.slot-booked{ background:linear-gradient(135deg,#122235 80%,#0f1d2e 100%); border:1.5px solid #274361; color:#c7d2fe; }
+.theme-dark .calendar-table td.selected-slot{ border-color:#0ea5e9 !important; box-shadow:0 0 0 2px rgba(14,165,233,.5); }
+
+/* Notes banner (kept here as fallback in case inline CSS is moved) */
+.notes-banner{
+  background:#fff8cc;
+  border:1px solid #f2cf63;
+  color:#7a5a00;
+  border-radius:12px;
+  padding:10px 12px;
+  box-shadow:0 2px 8px rgba(20,60,120,0.08);
+  max-width:480px;
+  margin:0 0 8px auto;
+  font-size:0.95rem;
+}
+.notes-banner ul{ margin:0; padding-left:1.1rem; }
+.notes-banner .material-symbols-rounded{ vertical-align:middle; }

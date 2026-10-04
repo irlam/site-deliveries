@@ -1,0 +1,17 @@
+# --- serve real files/folders as-is
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# --- and explicitly exempt /icons/ from app rewrites
+RewriteRule ^icons/ - [L]
+# Ensure correct MIME types
+AddType application/javascript .js
+AddType application/json .json
+AddType application/manifest+json .webmanifest
+
+# If something upstream forces HTML, override just this file:
+<Files "pwa.js">
+  ForceType application/javascript
+</Files>

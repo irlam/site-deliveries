@@ -1,0 +1,16 @@
+/db.php
+/includes/config.push.php
+/includes/vapid.php
+/uploads/
+/delivery_sheets/
+/export/
+*.zip
+*.sql
+*.log
+.env
+.env.*
+!.env.example
+/.well-known/
+/index.html
+/plesk-placeholder.html
+/logo.png

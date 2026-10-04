@@ -1,0 +1,19 @@
+{
+  "name": "defecttracker/deliveries",
+  "type": "project",
+  "require": {
+    "minishlink/web-push": "*",
+    "chillerlan/php-qrcode": "^5",
+    "dompdf/dompdf": "^2.0"
+  },
+  "config": {
+    "platform": { "php": "8.2.28" },
+    "optimize-autoloader": true,
+    "sort-packages": true
+  },
+  "autoload": {
+    "psr-4": {
+      "App\\": "includes/App/"
+    }
+  }
+}
