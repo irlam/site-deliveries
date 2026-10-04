@@ -1,12 +1,12 @@
 /* sw.js – site service worker (sitedeliveries.site) */
 
 /** Change when you deploy to nudge updates */
-const SW_VERSION = 'v1.0.0';
+const SW_VERSION = 'v1.0.1';
 
 /** Optional tiny cache for your app shell/icons (safe to leave empty) */
 const PRECACHE = [
-  '/icon.php?f=icon-192.png',
-  '/icon.php?f=icon-96.png'
+  '/assets/brand/icon-192.png',
+  '/assets/brand/icon-96.png'
 ];
 
 self.addEventListener('install', event => {
@@ -38,8 +38,8 @@ self.addEventListener('push', event => {
   const title = data.title || 'Site update';
   const options = {
     body: data.body || 'You have a new notification.',
-    icon: data.icon || '/icon.php?f=icon-192.png',
-    badge: data.badge || '/icon.php?f=icon-96.png',
+    icon: data.icon || '/assets/brand/icon-192.png',
+    badge: data.badge || '/assets/brand/icon-96.png',
     tag: data.tag || undefined,
     requireInteraction: !!data.requireInteraction,
     data: {

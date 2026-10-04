@@ -29,6 +29,11 @@ function esc($s){ return htmlspecialchars((string)$s, ENT_QUOTES); }
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<link rel="apple-touch-icon" href="/assets/brand/icon-180.png">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/svg+xml" href="/assets/brand/logo.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/brand/icon-32.png">
+
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Delivery Change Requests – Admin</title>

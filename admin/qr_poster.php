@@ -34,6 +34,11 @@ $logoUrl   = abs_url('/icons/icon-192.png');
 ?><!doctype html>
 <html lang="en">
 <head>
+<link rel="apple-touch-icon" href="/assets/brand/icon-180.png">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/svg+xml" href="/assets/brand/logo.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/brand/icon-32.png">
+
 <meta charset="utf-8">
 <title>QR Poster · Deliveries</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">

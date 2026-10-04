@@ -55,13 +55,17 @@ $mondayYmd  = date('Y-m-d', strtotime('-' . ($dow - 1) . ' days'));
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/svg+xml" href="/assets/brand/logo.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/brand/icon-32.png">
+
   <meta charset="UTF-8">
-  <title>Site Delivery Management</title>
+  <title>Site Deliveries</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
   <link rel="manifest" href="/manifest.webmanifest">
   <meta name="theme-color" content="#0b1220">
-  <link rel="apple-touch-icon" href="/icons/icon-180.png">
+  <link rel="apple-touch-icon" href="/assets/brand/icon-180.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
@@ -143,7 +147,7 @@ $mondayYmd  = date('Y-m-d', strtotime('-' . ($dow - 1) . ' days'));
 
     <!-- Left: logo + title -->
     <h1 class="mb-0 d-flex align-items-center gap-2">
-      <img src="/icons/icon-192.png" alt="Site Deliveries" class="img-fluid" style="height:48px;width:auto;">
+      <img src="/assets/brand/logo.svg" alt="" aria-hidden="true" width="48" height="48" style="flex-shrink:0;">
       <span class="text-primary fw-semibold fs-3">Site Deliveries</span>
     </h1>
 
