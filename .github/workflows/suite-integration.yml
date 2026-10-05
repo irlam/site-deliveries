@@ -16,6 +16,7 @@ jobs:
           extensions: pdo, pdo_sqlite
       - name: Lint Suite API
         run: |
+          php -l includes/suite-auth.php
           php -l api/suite-summary.php
           php -l api/suite-references.php
           php -l tests/suite-integration.php
