@@ -1,0 +1,5 @@
+# Never allow HTTP downloads of private PHP configuration.
+# PHP includes from the filesystem continue to work.
+<FilesMatch "^(db\.local\.php|suite\.local\.php|db\.php|config\.php)$">
+    Require all denied
+</FilesMatch>
