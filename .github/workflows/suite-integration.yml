@@ -1,0 +1,23 @@
+name: Deliveries Suite integration checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  suite:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: pdo, pdo_sqlite
+      - name: Lint Suite API
+        run: |
+          php -l api/suite-summary.php
+          php -l api/suite-references.php
+          php -l tests/suite-integration.php
+      - name: Test security and metrics
+        run: php tests/suite-integration.php
