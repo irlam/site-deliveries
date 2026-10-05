@@ -7,6 +7,7 @@ declare(strict_types=1);
  */
 $root = sys_get_temp_dir() . '/suite-delivery-test-' . bin2hex(random_bytes(6));
 mkdir($root . '/api', 0700, true);
+mkdir($root . '/includes', 0700, true);
 
 try {
     foreach (['suite-summary.php', 'suite-references.php'] as $file) {
@@ -14,6 +15,8 @@ try {
             throw new RuntimeException('Cannot stage ' . $file);
         }
     }
+
+    copy(dirname(__DIR__) . '/includes/suite-auth.php', $root . '/includes/suite-auth.php');
 
     $dbPath = $root . '/fixture.sqlite';
     $pdo = new PDO('sqlite:' . $dbPath);
@@ -107,6 +110,8 @@ try {
     foreach (['api/suite-summary.php', 'api/suite-references.php', 'db.php', 'fixture.sqlite'] as $file) {
         @unlink($root . '/' . $file);
     }
+    @unlink($root . '/includes/suite-auth.php');
+    @rmdir($root . '/includes');
     @rmdir($root . '/api');
     @rmdir($root);
 }
