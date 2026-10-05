@@ -5,35 +5,15 @@ header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
 header('X-Content-Type-Options: nosniff');
 
-require_once dirname(__DIR__) . '/db.php';
-
-$key = defined('CONSTRUCTION_SUITE_API_KEY')
-    ? trim((string) CONSTRUCTION_SUITE_API_KEY)
-    : trim((string) (getenv('CONSTRUCTION_SUITE_API_KEY') ?: ''));
-
-$provided = trim((string) (
-    $_SERVER['HTTP_X_CONSTRUCTION_SUITE_KEY'] ?? ''
-));
-
-if (strlen($key) < 32) {
-    http_response_code(503);
-    echo json_encode([
-        'ok' => false,
-        'error' => 'suite_integration_not_configured'
-    ]);
-    exit;
-}
-
-if ($provided === '' || !hash_equals($key, $provided)) {
-    http_response_code(401);
-    echo json_encode([
-        'ok' => false,
-        'error' => 'unauthorized'
-    ]);
-    exit;
-}
+require_once dirname(__DIR__) . '/includes/suite-auth.php';
+deliveries_suite_require_key();
 
 try {
+    require_once dirname(__DIR__) . '/db.php';
+    if (!isset($pdo) || !($pdo instanceof PDO)) {
+        throw new RuntimeException('Deliveries database is unavailable.');
+    }
+
     $tz = new DateTimeZone('Europe/London');
     $now = new DateTimeImmutable('now', $tz);
     $start = $now->setTime(0, 0);
