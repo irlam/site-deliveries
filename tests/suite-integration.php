@@ -110,7 +110,7 @@ try {
     $check(($request($summaryFile,$key,$key,['site'=>1])['metrics']['total']??null)===5,'Site summary excludes another site');
     $check(($request($summaryFile,$key,$key,['site'=>1],2)['metrics']['total']??null)===0,'Server-bound company reporting excludes another company');
     $check(($request($summaryFile,$key,$key,['site'=>99])['error']??'')==='site_not_found','Unknown Suite site mapping denied');
-    $check(count($request('suite-references.php',$key,$key)['items'])===2,'References discover migrated sites');unset($pdo);
+    $found=$request('suite-references.php',$key,$key)['items'];$check(count($found)===2&&$found[1]===['value'=>'1','label'=>'Rochdale Road'],'References match the Suite discovery value/label contract');unset($pdo);
     echo "PASS: Deliveries Suite API security, summary metrics and mapping contracts.\n";
 } finally {
     foreach (['api/suite-summary.php', 'api/suite-references.php', 'db.php', 'fixture.sqlite'] as $file) {
