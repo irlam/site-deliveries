@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 require __DIR__.'/db.php';require __DIR__.'/includes/logistics-auth.php';
-if(session_status()!==PHP_SESSION_ACTIVE)session_start();$error='';
+logistics_start_session();$error='';
 if($_SERVER['REQUEST_METHOD']==='POST'){
     try{logistics_write_check();if(($_SESSION['login_wait_until']??0)>time())Logistics::error('Please wait a minute before trying again.',403);
         $s=$pdo->prepare('SELECT u.*,c.active AS company_active FROM logistics_users u JOIN logistics_companies c ON c.id=u.company_id WHERE u.email=?');$s->execute([strtolower(trim((string)($_POST['email']??'')))]);$u=$s->fetch(PDO::FETCH_ASSOC);

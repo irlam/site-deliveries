@@ -304,7 +304,7 @@ $prefill = [
 
 <div class="wrap">
   <h1>Dashboard</h1>
-  <p class="muted">Configure booking behaviour and master lists. Changes apply immediately to the public booking form and calendar.</p>
+  <p class="muted">Configure booking behaviour and master lists. Changes apply immediately to delivery booking forms and calendars.</p>
 
   <?php if ($saveMsg): ?>
     <div class="alert success"><?= h($saveMsg) ?></div>
@@ -334,7 +334,7 @@ $prefill = [
     <div class="kv">
       <div class="item"><b>Current deliveries time window:</b> <?= h($time['start']) ?> → <?= h($time['end']) ?></div>
       <div class="item"><b>Interval:</b> <?= (int)$time['interval'] ?> minutes</div>
-      <div class="item"><b>Uniqueness:</b> Per minute (DB-enforced)</div>
+      <div class="item"><b>Reservations:</b> <?php require_once dirname(__DIR__)."/includes/logistics-auth.php"; echo logistics_enabled($pdo)?"Gate capacity and named equipment, checked for the full duration":"Per minute (DB-enforced)"; ?></div>
       <div class="item"><b>Push subscribers:</b> <?= (int)$subCount ?></div>
     </div>
   </div>
