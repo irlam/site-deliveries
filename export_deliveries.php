@@ -7,6 +7,8 @@
 
 declare(strict_types=1);
 require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/includes/logistics-legacy.php';
+
 
 date_default_timezone_set('Europe/London'); // ok to keep for "Generated:" etc.
 
@@ -240,6 +242,7 @@ if ($range === 'daily' && $date) {
   colgroup col:nth-child(6){ width: 12%; }
   colgroup col:nth-child(7){ width: 14%; }
 </style>
+<?php if(logistics_enabled($pdo)): ?><meta name="logistics-csrf" content="<?=htmlspecialchars(logistics_csrf(),ENT_QUOTES,'UTF-8')?>"><script src="/assets/logistics-legacy.js"></script><?php endif; ?>
 </head>
 <body>
 <header>

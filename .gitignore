@@ -15,3 +15,8 @@
 /plesk-placeholder.html
 /logo.png
 /includes/suite.local.php
+
+/tests/runtime/
+/release/
+
+/vendor/dompdf/dompdf/lib/fonts/*.ufm.json

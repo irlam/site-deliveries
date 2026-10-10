@@ -1,3 +1,10 @@
+# Private delivery documents are served only after record-level authorization.
+RewriteEngine On
+RewriteRule ^((?:uploads|delivery_sheets|export)/.*)$ private-file.php?path=$1 [B,L,QSA]
+RewriteRule ^(?:includes|scripts|tests|vendor|\.git)(?:/|$) - [F,L]
+<FilesMatch "^(db\.php|.*\.(?:sql|zip|log))$">
+ Require all denied
+</FilesMatch>
 # --- serve real files/folders as-is
 RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} -f [OR]

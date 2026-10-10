@@ -4,6 +4,8 @@
 
 declare(strict_types=1);
 require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/includes/logistics-legacy.php';
+
 date_default_timezone_set('Europe/London');
 
 function h(string $s): string { return htmlspecialchars($s, ENT_QUOTES, 'UTF-8'); }
@@ -83,6 +85,7 @@ foreach ($methodRows as $r) {
   .toolbar{margin-bottom:10px}
   .toolbar a{display:inline-block;padding:7px 10px;border:1px solid #b6c9e6;border-radius:8px;text-decoration:none;color:#24508c;background:#f1f7fd;margin-right:8px}
 </style>
+<?php if(logistics_enabled($pdo)): ?><meta name="logistics-csrf" content="<?=htmlspecialchars(logistics_csrf(),ENT_QUOTES,'UTF-8')?>"><script src="/assets/logistics-legacy.js"></script><?php endif; ?>
 </head>
 <body>
   <h1>Weekly Reports</h1>

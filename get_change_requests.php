@@ -3,6 +3,8 @@
 declare(strict_types=1);
 header('Content-Type: application/json; charset=utf-8');
 require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/includes/logistics-legacy.php';
+
 
 if (session_status() === PHP_SESSION_NONE) session_start();
 $isAdmin = isset($_SESSION['admin_id']) && is_int($_SESSION['admin_id']) && $_SESSION['admin_id'] > 0;

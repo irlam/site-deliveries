@@ -7,6 +7,8 @@ header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
 header('Pragma: no-cache');
 
 require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/includes/logistics-legacy.php';
+
 
 // --- tiny helpers ---
 function bad(int $code, string $msg){

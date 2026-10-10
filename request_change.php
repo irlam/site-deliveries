@@ -4,6 +4,8 @@ header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
 
 require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/includes/logistics-legacy.php';
+
 
 function bad(int $code, string $msg){
   http_response_code($code);

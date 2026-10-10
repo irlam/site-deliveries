@@ -11,6 +11,8 @@
  */
 
 require_once 'db.php';
+require_once __DIR__ . '/includes/logistics-legacy.php';
+
 require_once __DIR__ . '/includes/admin_auth.php';
 admin_require($pdo);
 

@@ -15,6 +15,8 @@
  */
 
 require_once 'db.php';
+require_once __DIR__ . '/includes/logistics-legacy.php';
+
 
 // --- Fetch delivery stats from the database ---
 

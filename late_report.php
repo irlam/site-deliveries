@@ -3,6 +3,8 @@
 // Usage: /late_report.php?from=DD/MM/YYYY&to=DD/MM/YYYY
 declare(strict_types=1);
 require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/includes/logistics-legacy.php';
+
 date_default_timezone_set('Europe/London');
 
 function h(string $s): string { return htmlspecialchars($s, ENT_QUOTES, 'UTF-8'); }
@@ -67,6 +69,7 @@ foreach ($rows as $r) {
   button{padding:7px 10px;border:1px solid #b6c9e6;border-radius:8px;background:#f1f7fd;color:#24508c}
   .muted{color:var(--muted)}
 </style>
+<?php if(logistics_enabled($pdo)): ?><meta name="logistics-csrf" content="<?=htmlspecialchars(logistics_csrf(),ENT_QUOTES,'UTF-8')?>"><script src="/assets/logistics-legacy.js"></script><?php endif; ?>
 </head>
 <body>
   <h1>Late / No-show</h1>

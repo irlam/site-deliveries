@@ -34,3 +34,19 @@ function deliveries_suite_require_key(): void
         exit;
     }
 }
+
+/** Site-scoped reporting after the logistics migration; old installations keep their contract. */
+function deliveries_suite_scope(PDO $pdo): array
+{
+    try {$pdo->query('SELECT site_id FROM deliveries LIMIT 0');} catch (PDOException $e) {
+        if ((string)$e->getCode() === '42S22' || ((string)$e->getCode() === 'HY000' && str_contains($e->getMessage(), 'no such column: site_id'))) return ['', []];
+        throw $e;
+    }
+    $site = filter_var($_GET['site'] ?? '', FILTER_VALIDATE_INT, ['options'=>['min_range'=>1]]);
+    if (!$site) {http_response_code(422);echo json_encode(['ok'=>false,'error'=>'site_reference_required']);exit;}
+    $s=$pdo->prepare('SELECT id FROM logistics_sites WHERE id=? AND active=1');$s->execute([$site]);
+    if (!$s->fetchColumn()) {http_response_code(404);echo json_encode(['ok'=>false,'error'=>'site_not_found']);exit;}
+    $sql=' AND site_id=?';$args=[$site];
+    if(defined('CONSTRUCTION_SUITE_COMPANY_ID')){$sql.=' AND company_id=?';$args[]=(int)CONSTRUCTION_SUITE_COMPANY_ID;}
+    return [$sql,$args];
+}

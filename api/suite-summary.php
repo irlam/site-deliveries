@@ -14,6 +14,7 @@ try {
         throw new RuntimeException('Deliveries database is unavailable.');
     }
 
+    [$scopeSql,$scopeArgs]=deliveries_suite_scope($pdo);
     $tz = new DateTimeZone('Europe/London');
     $now = new DateTimeImmutable('now', $tz);
     $start = $now->setTime(0, 0);
@@ -55,12 +56,12 @@ try {
           AND due_datetime < ?
     ";
 
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([
+    $stmt = $pdo->prepare($sql.$scopeSql);
+    $stmt->execute(array_merge([
         $now->format('Y-m-d H:i:s'),
         $start->format('Y-m-d H:i:s'),
         $end->format('Y-m-d H:i:s')
-    ]);
+    ],$scopeArgs));
 
     $row = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
 

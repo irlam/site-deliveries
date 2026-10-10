@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/includes/logistics-legacy.php';
+
 require_once __DIR__ . '/includes/push.php'; // uses your existing vendor/minishlink/web-push
 
 header('Content-Type: application/json');
@@ -51,7 +53,7 @@ try {
     $payload = [
         'type'         => $action,                   // 'arrived' | 'completed'
         'delivery_id'  => (int)$delivery['id'],
-        'supplier'     => $delivery['supplier'] ?? '',
+        'supplier'     => logistics_enabled($pdo) ? 'Site delivery' : ($delivery['supplier'] ?? ''),
         'material'     => $delivery['material'] ?? '',
         'quantity'     => $delivery['quantity'] ?? '',
         'due_datetime' => $delivery['due_datetime'] ?? '',
@@ -59,7 +61,8 @@ try {
         'ts'           => time(),
     ];
     // This function is defined in includes/push.php (already present in your site)
-    broadcast_delivery_event($pdo, $payload);
+    if(logistics_enabled($pdo))$payload=['type'=>$action,'title'=>'Site Deliveries','body'=>'A delivery status has changed. Sign in to view your bookings.','url'=>'/schedule.php','ts'=>time()];
+    if(function_exists('broadcast_delivery_event'))broadcast_delivery_event($pdo, $payload);
 
     echo json_encode(['ok' => true, 'delivery' => $delivery]);
 } catch (Throwable $e) {

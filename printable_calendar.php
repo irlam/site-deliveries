@@ -14,6 +14,8 @@
  */
 
 require_once 'db.php';
+require_once __DIR__ . '/includes/logistics-legacy.php';
+
 
 // Get the reference week from GET, default to today
 $week = isset($_GET['week']) ? $_GET['week'] : date('Y-m-d');
@@ -180,6 +182,7 @@ foreach ($deliveries as $del) {
         margin-top: 2em;
     }
     </style>
+<?php if(logistics_enabled($pdo)): ?><meta name="logistics-csrf" content="<?=htmlspecialchars(logistics_csrf(),ENT_QUOTES,'UTF-8')?>"><script src="/assets/logistics-legacy.js"></script><?php endif; ?>
 </head>
 <body>
     <div class="header">

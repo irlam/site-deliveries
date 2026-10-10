@@ -13,7 +13,7 @@ jobs:
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
-          extensions: pdo, pdo_sqlite
+          extensions: pdo, pdo_sqlite, pdo_mysql
       - name: Lint Suite API
         run: |
           php -l includes/suite-auth.php
@@ -22,3 +22,38 @@ jobs:
           php -l tests/suite-integration.php
       - name: Test security and metrics
         run: php tests/suite-integration.php
+
+      - name: Test gates, equipment and company privacy
+        run: php tests/logistics.php
+  mysql:
+    runs-on: ubuntu-latest
+    services:
+      mariadb:
+        image: mariadb:10.11
+        env:
+          MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: '1'
+        ports: ['3308:3306']
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=10s --health-timeout=5s --health-retries=10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: pdo_mysql, pdo_sqlite, gd, mbstring
+      - name: Prepare disposable database and verify repeatable migration
+        run: |
+          php tests/mysql-logistics.php
+          cat > db.php <<'PHP'
+          <?php $pdo=new PDO('mysql:host=127.0.0.1;port=3308;dbname=deliveries_gate_fixture;charset=utf8mb4','root','');$pdo->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
+          PHP
+          php scripts/upgrade-logistics.php
+          php scripts/upgrade-logistics.php --activate
+          php scripts/upgrade-logistics.php --activate
+          php tests/mysql-assertions.php
+      - name: Verify HTTP privacy, reports and concurrent reservations
+        run: |
+          php -S 127.0.0.1:8790 > /tmp/deliveries-fixture-server.log 2>&1 &
+          for attempt in 1 2 3 4 5; do curl -s http://127.0.0.1:8790/company-login.php > /dev/null && break; sleep 1; done
+          python3 tests/logistics-http.py

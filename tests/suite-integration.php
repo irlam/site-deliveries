@@ -54,12 +54,12 @@ try {
         . var_export('sqlite:' . $dbPath, true)
         . '); $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);');
 
-    $request = static function (string $file, ?string $key, string $supplied) use ($root): array {
+    $request = static function (string $file, ?string $key, string $supplied, array $query=[], ?int $company=null) use ($root): array {
         $code = 'putenv(' . var_export(
             'CONSTRUCTION_SUITE_API_KEY=' . ($key ?? ''), true
         ) . '); $_SERVER["HTTP_X_CONSTRUCTION_SUITE_KEY"] = '
         . var_export($supplied, true)
-        . '; require ' . var_export($root . '/api/' . $file, true) . ';';
+        . '; $_GET='.var_export($query,true).'; '.($company===null?'':'define("CONSTRUCTION_SUITE_COMPANY_ID",'.$company.');').' require ' . var_export($root . '/api/' . $file, true) . ';';
 
         $proc = proc_open([PHP_BINARY, '-r', $code], [
             0 => ['pipe', 'r'], 1 => ['pipe', 'w'], 2 => ['pipe', 'w']
@@ -105,6 +105,12 @@ try {
     $check(($refs['ok'] ?? false) === true, 'Reference lookup did not authenticate');
     $check(($refs['items'] ?? null) === [], 'Single-site calendar must have no fictional sites');
 
+    $pdo=new PDO('sqlite:'.$dbPath);$pdo->exec('ALTER TABLE deliveries ADD COLUMN site_id INTEGER; ALTER TABLE deliveries ADD COLUMN company_id INTEGER; CREATE TABLE logistics_sites(id INTEGER PRIMARY KEY,name TEXT,active INTEGER); INSERT INTO logistics_sites VALUES(1,"Rochdale Road",1),(2,"Other site",1); UPDATE deliveries SET site_id=1,company_id=1; UPDATE deliveries SET site_id=2,company_id=2 WHERE id=6');
+    $check(($request($summaryFile,$key,$key)['error']??'')==='site_reference_required','Migrated summary refuses unscoped requests');
+    $check(($request($summaryFile,$key,$key,['site'=>1])['metrics']['total']??null)===5,'Site summary excludes another site');
+    $check(($request($summaryFile,$key,$key,['site'=>1],2)['metrics']['total']??null)===0,'Server-bound company reporting excludes another company');
+    $check(($request($summaryFile,$key,$key,['site'=>99])['error']??'')==='site_not_found','Unknown Suite site mapping denied');
+    $check(count($request('suite-references.php',$key,$key)['items'])===2,'References discover migrated sites');unset($pdo);
     echo "PASS: Deliveries Suite API security, summary metrics and mapping contracts.\n";
 } finally {
     foreach (['api/suite-summary.php', 'api/suite-references.php', 'db.php', 'fixture.sqlite'] as $file) {

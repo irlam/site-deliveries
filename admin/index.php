@@ -315,6 +315,7 @@ $prefill = [
 
   <div class="grid">
 	<?= card('/', 'Back to main Site', 'Open the public deliveries page in a new tab.','Live'); ?> 
+    <?= card('/admin/logistics.php', 'Gates, equipment & companies', 'Manage gate capacity, cranes, forklifts and private company access.', 'New'); ?>
     <?= card('/admin/time-config.php', 'Time Settings', 'Define the visible Time column: start, end, and slot interval.', 'Live'); ?>
     <?= card('/admin/unloading-methods.php', 'Unloading Methods', 'Manage the selectable unloading options (enable/disable, order, add new options).', 'Live'); ?>
     <?= card('/admin/account.php', 'Admin Account', 'Change admin email and password.','Live'); ?>

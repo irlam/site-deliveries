@@ -13,6 +13,11 @@
  * Last updated: 17/10/2025
  */
 require_once 'db.php';
+require_once __DIR__ . '/includes/logistics-auth.php';
+if(logistics_enabled($pdo)&&!isset($_GET['legacy'])){header('Location: /schedule.php');exit;}
+
+require_once __DIR__ . '/includes/logistics-legacy.php';
+
 require_once __DIR__ . '/includes/settings.php';
 
 /* --- Admin session --- */
@@ -141,6 +146,7 @@ $mondayYmd  = date('Y-m-d', strtotime('-' . ($dow - 1) . ' days'));
     /* Keep compatibility with old notes markup */
     .notes-banner{ padding:0; border:none; box-shadow:none; }
   </style>
+<?php if(logistics_enabled($pdo)): ?><meta name="logistics-csrf" content="<?=htmlspecialchars(logistics_csrf(),ENT_QUOTES,'UTF-8')?>"><script src="/assets/logistics-legacy.js"></script><?php endif; ?>
 </head>
       <div class="container my-4">
   <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
