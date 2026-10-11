@@ -28,8 +28,8 @@ if (!function_exists('abs_url')) {
 /* ---- content ---- */
 $targetUrl = abs_url('/');
 $qrSrc     = '/icon.php?qr=' . rawurlencode($targetUrl) . '&s=680&fmt=svg&level=M&margin=2';
-// use the live logo in the site root
-$logoUrl   = abs_url('/icons/icon-192.png');
+// Use the same brand asset as the calendar and login pages.
+$logoUrl   = abs_url('/assets/brand/logo.svg');
 
 ?><!doctype html>
 <html lang="en">
@@ -57,7 +57,7 @@ $logoUrl   = abs_url('/icons/icon-192.png');
   .muted{color:var(--muted)}
   .qrwrap{display:grid;grid-template-columns:1fr;justify-items:center;margin:10px 0 6px}
   .qr{display:inline-block;background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:10px}
-  .qr img{display:block;width:420px;height:420px}
+  .qr img{display:block;width:420px;max-width:100%;height:auto;aspect-ratio:1}.qr{max-width:100%;box-sizing:border-box}.link{overflow-wrap:anywhere}@media(max-width:600px){.sheet{margin:12px;padding:18px}.brand{align-items:flex-start}.brand img{width:48px;height:48px}h1{font-size:24px}}
   .cta{margin-top:12px;text-align:center}
   .link{font-size:20px;font-weight:800;letter-spacing:.2px}
   .hint{margin-top:6px;font-size:12px}

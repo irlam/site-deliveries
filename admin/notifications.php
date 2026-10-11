@@ -102,6 +102,7 @@ $rows = $q ? $q->fetchAll(PDO::FETCH_ASSOC) : [];
   <h1 style="margin:0 0 8px">Broadcast History</h1>
   <p class="muted" style="margin:0 0 12px">Newest first (last 200). Rows come from <code>push_broadcasts</code>.</p>
 
+  <?php if(isset($_GET['deleted'])):?><p role="status">Broadcast history entry deleted. Previously delivered notifications remain on recipients’ devices.</p><?php endif?>
   <div class="panel">
     <?php if (!$rows): ?>
       <p class="muted">No broadcasts yet.</p>
@@ -115,6 +116,7 @@ $rows = $q ? $q->fetchAll(PDO::FETCH_ASSOC) : [];
             <th style="width:180px">Meta</th>
             <th style="width:120px">Result</th>
             <th style="width:200px">Notes</th>
+              <th>Action</th>
           </tr>
         </thead>
         <tbody>
@@ -140,6 +142,7 @@ $rows = $q ? $q->fetchAll(PDO::FETCH_ASSOC) : [];
               <div>Failed: <b><?= (int)$r['failed'] ?></b></div>
             </td>
             <td><?= nl2br(h((string)($r['notes'] ?? ''))) ?></td>
+                <td><a class="btn" href="/admin/delete-broadcast.php?id=<?= (int)$r['id'] ?>">Delete</a></td>
           </tr>
           <?php endforeach; ?>
         </tbody>

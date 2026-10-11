@@ -617,6 +617,7 @@ $prefill = [
               <th style="width:160px">Meta</th>
               <th style="width:100px">Result</th>
               <th style="width:200px">Notes</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody>
@@ -633,6 +634,7 @@ $prefill = [
                 </td>
                 <td><b><?= (int)$r['sent'] ?></b> / <b><?= (int)$r['failed'] ?></b></td>
                 <td><?= nl2br(h((string)($r['notes'] ?? ''))) ?></td>
+                <td><a class="btn" href="/admin/delete-broadcast.php?id=<?= (int)$r['id'] ?>">Delete</a></td>
               </tr>
             <?php endforeach; ?>
           </tbody>
