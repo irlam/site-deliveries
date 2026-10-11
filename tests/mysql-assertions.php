@@ -2,6 +2,7 @@
 declare(strict_types=1);
 require dirname(__DIR__).'/includes/logistics.php';
 $pdo=new PDO('mysql:host=127.0.0.1;port=3308;dbname=deliveries_gate_fixture;charset=utf8mb4','root','');$pdo->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);$l=new Logistics($pdo);
+if(in_array('--viewer',$argv,true)){$pdo->exec("UPDATE logistics_users SET role='viewer' WHERE id=1");exit;}
 if(in_array('--worker',$argv,true)){
     try{$l->save(['id'=>1,'name'=>'Admin','admin'=>true,'company_id'=>null],['site_id'=>1,'company_id'=>1,'gate_id'=>2,'resource_id'=>2,'due_datetime'=>'2026-10-20 09:00','duration_min'=>60,'supplier'=>'Electrical','material'=>'Concurrent load','quantity'=>'1','user_name'=>'Admin']);echo 'created';}catch(RuntimeException $e){if($e->getCode()===409){echo 'conflict';exit;}throw $e;}exit;
 }

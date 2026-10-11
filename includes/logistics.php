@@ -9,6 +9,8 @@ final class Logistics
     public function one(string $sql, array $args=[]): ?array {return $this->rows($sql,$args)[0]??null;}
     public function run(string $sql,array $args=[]): void {$s=$this->db->prepare($sql);$s->execute($args);}
     public static function error(string $message,int $code=422): never {throw new RuntimeException($message,$code);}
+    public static function canWrite(array $user): bool {return ($user['role']??'booker')!=='viewer';}
+    public static function requireWrite(array $user): void {if(!self::canWrite($user))self::error('Viewer access is read only.',403);}
     public function site(array $user,int $id): array {
         $site=$this->one('SELECT * FROM logistics_sites WHERE id=? AND active=1',[$id]);
         if(!$site)self::error('Site not found.',404);
@@ -24,7 +26,7 @@ final class Logistics
     public function context(array $u): array {
         $sites=$u['admin']?$this->rows('SELECT * FROM logistics_sites WHERE active=1 ORDER BY name'):$this->rows('SELECT s.* FROM logistics_sites s JOIN logistics_memberships m ON m.site_id=s.id WHERE m.user_id=? AND s.active=1 ORDER BY s.name',[$u['id']]);
         $ids=array_map('intval',array_column($sites,'id'));$in=$ids?implode(',',$ids):'0';
-        return ['user'=>['id'=>$u['id'],'name'=>$u['name'],'admin'=>$u['admin'],'company_id'=>$u['company_id']], 'sites'=>$sites,'gates'=>$this->rows("SELECT * FROM logistics_gates WHERE active=1 AND site_id IN ($in) ORDER BY name"),'resources'=>$this->rows("SELECT * FROM logistics_resources WHERE active=1 AND site_id IN ($in) ORDER BY name"),'links'=>$this->rows("SELECT l.* FROM logistics_gate_resources l JOIN logistics_gates g ON g.id=l.gate_id WHERE g.site_id IN ($in)"),'companies'=>$u['admin']?$this->rows('SELECT * FROM logistics_companies WHERE active=1 ORDER BY name'):$this->rows('SELECT * FROM logistics_companies WHERE id=? AND active=1',[$u['company_id']])];
+        return ['user'=>['id'=>$u['id'],'name'=>$u['name'],'admin'=>$u['admin'],'company_id'=>$u['company_id'],'can_write'=>self::canWrite($u)], 'sites'=>$sites,'gates'=>$this->rows("SELECT * FROM logistics_gates WHERE active=1 AND site_id IN ($in) ORDER BY name"),'resources'=>$this->rows("SELECT * FROM logistics_resources WHERE active=1 AND site_id IN ($in) ORDER BY name"),'links'=>$this->rows("SELECT l.* FROM logistics_gate_resources l JOIN logistics_gates g ON g.id=l.gate_id WHERE g.site_id IN ($in)"),'companies'=>$u['admin']?$this->rows('SELECT * FROM logistics_companies WHERE active=1 ORDER BY name'):$this->rows('SELECT * FROM logistics_companies WHERE id=? AND active=1',[$u['company_id']])];
     }
     public function calendar(array $u,int $site,string $from,string $to): array {
         $this->site($u,$site);
@@ -59,6 +61,7 @@ final class Logistics
     }
     public function audit(array $u,int $site,string $event,?int $delivery,array $details=[]): void {$this->run('INSERT INTO logistics_audit(site_id,actor,event,delivery_id,details,created_at) VALUES(?,?,?,?,?,?)',[$site,($u['admin']?'admin:':'user:').$u['id'],$event,$delivery,json_encode($details,JSON_THROW_ON_ERROR),date('Y-m-d H:i:s')]);}
     public function save(array $u,array $in): array {
+        self::requireWrite($u);
         $id=(int)($in['id']??0);$old=$id?$this->delivery($u,$id):null;
         if($old&&in_array(strtolower($old['status']),['completed','cancelled'],true))self::error('Completed or cancelled deliveries cannot be rescheduled.',409);
         $site=(int)($old['site_id']??$in['site_id']??0);$this->site($u,$site);
@@ -97,6 +100,7 @@ final class Logistics
         }catch(Throwable $e){if($this->db->inTransaction())$this->db->rollBack();throw $e;}
     }
     public function cancel(array $u,int $id,int $revision): void {
+        self::requireWrite($u);
         $d=$this->delivery($u,$id);if(strtolower($d['status'])==='completed')self::error('Completed deliveries cannot be cancelled.',409);
         $this->db->beginTransaction();try{$s=$this->db->prepare("UPDATE deliveries SET status='Cancelled',logistics_revision=logistics_revision+1 WHERE id=? AND logistics_revision=? AND LOWER(status)<>'completed'");$s->execute([$id,$revision]);if($s->rowCount()!==1)self::error('Booking changed. Refresh and retry.',409);$this->audit($u,(int)$d['site_id'],'cancelled',$id);$this->db->commit();}catch(Throwable $e){$this->db->rollBack();throw $e;}
     }

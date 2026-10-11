@@ -35,6 +35,12 @@ denied(fn()=>$l->save($electric,array_replace($input,['due_datetime'=>'2026-10-1
 denied(fn()=>$l->save($electric,array_replace($input,['due_datetime'=>'2026-10-12 11:10'])),422,'admin slot interval preserved');
 $manual=array_replace($input,['gate_id'=>3,'resource_id'=>0,'unloading_method'=>'Manual']);$c=$l->save($electric,array_replace($manual,['due_datetime'=>'2026-10-14 09:00','duration_min'=>20]));$d=$l->save($electric,array_replace($manual,['due_datetime'=>'2026-10-14 09:20','duration_min'=>20]));$l->save($electric,array_replace($manual,['due_datetime'=>'2026-10-14 09:00','duration_min'=>40]));check(true,'capacity counts peak concurrent occupancy rather than all intersecting bookings');
 denied(fn()=>$l->save($electric,array_replace($manual,['due_datetime'=>'2026-10-14 09:00','duration_min'=>20])),409,'gate capacity limit enforced');
+$viewer=array_replace($electric,['role'=>'viewer']);
+check(!$l->context($viewer)['user']['can_write'],'viewer context disables booking controls');
+check((int)$l->delivery($viewer,(int)$a['id'])['id']===(int)$a['id'],'viewer reads own company booking');
+denied(fn()=>$l->save($viewer,$input),403,'viewer cannot create or edit bookings');
+denied(fn()=>$l->cancel($viewer,(int)$a['id'],1),403,'viewer cannot cancel bookings');
+denied(fn()=>$l->delivery($viewer,(int)$b['id']),403,'viewer cannot read other company booking');
 $statsNow=new DateTimeImmutable('2026-10-12 08:30:00',new DateTimeZone('Europe/London'));
 $adminStats=$l->stats($admin,1,$statsNow);$companyStats=$l->stats($dry,1,$statsNow);
 check($adminStats['total']===7&&$adminStats['today']===4&&$adminStats['week']===7,'stats preserve historical totals and current UK week counts');

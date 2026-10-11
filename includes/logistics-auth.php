@@ -13,7 +13,7 @@ function logistics_user(PDO $pdo): array {
     }
     if(isset($_SESSION['logistics_user_id'])){
         $s=$pdo->prepare('SELECT u.*,c.active AS company_active FROM logistics_users u JOIN logistics_companies c ON c.id=u.company_id WHERE u.id=?');$s->execute([(int)$_SESSION['logistics_user_id']]);$u=$s->fetch(PDO::FETCH_ASSOC);
-        if($u&&(int)$u['active']&&(int)$u['company_active'])return ['id'=>(int)$u['id'],'name'=>$u['name'],'admin'=>false,'company_id'=>(int)$u['company_id']];
+        if($u&&(int)$u['active']&&(int)$u['company_active'])return ['id'=>(int)$u['id'],'name'=>$u['name'],'admin'=>false,'company_id'=>(int)$u['company_id'],'role'=>$u['role']??'booker'];
     }
     Logistics::error('Sign in to view your company deliveries.',401);
 }

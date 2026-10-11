@@ -10,7 +10,7 @@ if(logistics_enabled($pdo)){
             if(!in_array($legacyScript,['upload_delivery_sheet.php','request_change.php'],true))Logistics::error('Use your private company calendar for deliveries.',403);
             (new Logistics($pdo))->delivery($legacyUser,(int)($_POST['delivery_id']??0));
         }
-        if($_SERVER['REQUEST_METHOD']==='POST')logistics_write_check();
+        if($_SERVER['REQUEST_METHOD']==='POST'){Logistics::requireWrite($legacyUser);logistics_write_check();}
         if(in_array(basename($_SERVER['SCRIPT_FILENAME']??''),['book_delivery.php','book_delivery_multi.php','add_delivery.php'],true)&&$_SERVER['REQUEST_METHOD']==='POST'){
             require_once __DIR__.'/settings.php';$l=new Logistics($pdo);$g=$l->one('SELECT * FROM logistics_gates WHERE active=1 ORDER BY id LIMIT 1');if(!$g)Logistics::error('Configure the main gate first.');
             $input=$_POST;$input['site_id']=$g['site_id'];$input['gate_id']=$g['id'];$input['duration_min']=get_time_settings($pdo)['interval'];

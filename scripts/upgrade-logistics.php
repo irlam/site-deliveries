@@ -15,6 +15,8 @@ $definitions=[
 'logistics_audit'=>"id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,site_id INT UNSIGNED NOT NULL,actor VARCHAR(80) NOT NULL,event VARCHAR(80) NOT NULL,delivery_id INT NULL,details TEXT NOT NULL,created_at DATETIME NOT NULL",
 ];
 foreach($definitions as $table=>$cols)$pdo->exec("CREATE TABLE IF NOT EXISTS `$table` ($cols) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+$userCols=array_column($pdo->query('SHOW COLUMNS FROM logistics_users')->fetchAll(PDO::FETCH_ASSOC),'Field');
+if(!in_array('role',$userCols,true))$pdo->exec("ALTER TABLE logistics_users ADD COLUMN role VARCHAR(20) NOT NULL DEFAULT 'booker'");
 $cols=array_column($pdo->query('SHOW COLUMNS FROM deliveries')->fetchAll(PDO::FETCH_ASSOC),'Field');
 foreach(['site_id'=>'INT UNSIGNED NULL','company_id'=>'INT UNSIGNED NULL','gate_id'=>'INT UNSIGNED NULL','resource_id'=>'INT UNSIGNED NULL','logistics_revision'=>'INT NOT NULL DEFAULT 1']as $column=>$type)if(!in_array($column,$cols,true))$pdo->exec("ALTER TABLE deliveries ADD COLUMN `$column` $type");
 $pdo->exec("INSERT IGNORE INTO logistics_companies(name) VALUES('McGoff Construction')");
