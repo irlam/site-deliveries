@@ -38,6 +38,25 @@ final class Logistics
             }else{$d['private']=false;}
         }unset($d);return $rows;
     }
+    public function stats(array $u, int $site, ?DateTimeImmutable $now=null): array {
+        $this->site($u,$site);
+        $zone=new DateTimeZone('Europe/London');
+        $now=($now??new DateTimeImmutable('now',$zone))->setTimezone($zone);
+        $today=$now->setTime(0,0);
+        $monday=$today->modify('-'.((int)$today->format('N')-1).' days');
+        $where='site_id=?';$args=[$site];
+        if(!$u['admin']){$where.=' AND company_id=?';$args[]=(int)$u['company_id'];}
+        $count=function(string $extra='',array $range=[])use($where,$args): int {
+            return (int)$this->one('SELECT COUNT(*) AS n FROM deliveries WHERE '.$where.$extra,array_merge($args,$range))['n'];
+        };
+        $week=[$monday->format('Y-m-d H:i:s'),$monday->modify('+7 days')->format('Y-m-d H:i:s')];
+        $result=['total'=>$count(),'today'=>$count(' AND due_datetime>=? AND due_datetime<?',[$today->format('Y-m-d H:i:s'),$today->modify('+1 day')->format('Y-m-d H:i:s')]),'week'=>$count(' AND due_datetime>=? AND due_datetime<?',$week)];
+        foreach(['crane'=>['crane'],'forklift'=>['forklift'],'byhand'=>['by hand','manual']] as $key=>$methods){
+            $result[$key]=$count(' AND due_datetime>=? AND due_datetime<? AND LOWER(TRIM(unloading_method)) IN ('.implode(',',array_fill(0,count($methods),'?')).')',array_merge($week,$methods));
+        }
+        $result['next']=$this->one("SELECT due_datetime,supplier FROM deliveries WHERE ".$where." AND due_datetime>=? AND LOWER(status) NOT IN ('cancelled','completed') ORDER BY due_datetime,id LIMIT 1",array_merge($args,[$now->format('Y-m-d H:i:s')]));
+        return $result;
+    }
     public function audit(array $u,int $site,string $event,?int $delivery,array $details=[]): void {$this->run('INSERT INTO logistics_audit(site_id,actor,event,delivery_id,details,created_at) VALUES(?,?,?,?,?,?)',[$site,($u['admin']?'admin:':'user:').$u['id'],$event,$delivery,json_encode($details,JSON_THROW_ON_ERROR),date('Y-m-d H:i:s')]);}
     public function save(array $u,array $in): array {
         $id=(int)($in['id']??0);$old=$id?$this->delivery($u,$id):null;

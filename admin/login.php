@@ -65,6 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <button class="btn primary" type="submit">Sign in</button>
       </div>
     </form>
+    <p style="color:var(--muted)">Need access? Contact <a style="color:var(--accent)" href="mailto:cirlam@gmail.com">cirlam@gmail.com</a>.</p>
   </div>
 </div>
 </body>

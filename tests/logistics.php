@@ -35,6 +35,13 @@ denied(fn()=>$l->save($electric,array_replace($input,['due_datetime'=>'2026-10-1
 denied(fn()=>$l->save($electric,array_replace($input,['due_datetime'=>'2026-10-12 11:10'])),422,'admin slot interval preserved');
 $manual=array_replace($input,['gate_id'=>3,'resource_id'=>0,'unloading_method'=>'Manual']);$c=$l->save($electric,array_replace($manual,['due_datetime'=>'2026-10-14 09:00','duration_min'=>20]));$d=$l->save($electric,array_replace($manual,['due_datetime'=>'2026-10-14 09:20','duration_min'=>20]));$l->save($electric,array_replace($manual,['due_datetime'=>'2026-10-14 09:00','duration_min'=>40]));check(true,'capacity counts peak concurrent occupancy rather than all intersecting bookings');
 denied(fn()=>$l->save($electric,array_replace($manual,['due_datetime'=>'2026-10-14 09:00','duration_min'=>20])),409,'gate capacity limit enforced');
+$statsNow=new DateTimeImmutable('2026-10-12 08:30:00',new DateTimeZone('Europe/London'));
+$adminStats=$l->stats($admin,1,$statsNow);$companyStats=$l->stats($dry,1,$statsNow);
+check($adminStats['total']===7&&$adminStats['today']===4&&$adminStats['week']===7,'stats preserve historical totals and current UK week counts');
+check($companyStats['total']===1&&$companyStats['crane']===1&&$companyStats['next']['supplier']==='Drylining','stats and next supplier stay within the signed-in company');
+check($adminStats['byhand']===3,'manual deliveries count as hand unloading');
+check($l->stats($admin,2,$statsNow)['total']===0,'stats are limited to the selected site');
+denied(fn()=>$l->stats($electric,2,$statsNow),403,'stats deny access to unassigned sites');
 $db->exec('DELETE FROM logistics_memberships WHERE user_id=1');denied(fn()=>$l->delivery($electric,(int)$a['id']),403,'membership removal immediately revokes record access');
 check(count($l->rows('SELECT * FROM logistics_audit'))>=8,'bookings edits and cancellations keep audit history');
 $other=$l->save($admin,array_replace($input,['site_id'=>2,'gate_id'=>4,'resource_id'=>0,'unloading_method'=>'Manual','due_datetime'=>'2026-10-13 09:00']));check((int)$other['site_id']===2,'original site blackout does not close another site');

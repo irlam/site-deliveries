@@ -27,8 +27,10 @@ check(request('/get_week_deliveries.php?week=2026-10-12')[0]==403,'legacy feed c
 check(request('/admin/')[0]==200 and b'Admin Login' in request('/admin/')[1] or b'Login' in request('/admin/')[1],'company cannot open legacy admin tools')
 check(request('/api/logistics.php?op=cancel',{'id':2,'revision':1})[0]==403,'missing CSRF denied')
 check(request('/api/logistics.php?op=cancel',{'id':3,'revision':1},csrf)[0]==403,'other company cancellation denied')
-status,body,_=request('/logistics-report.php?site=1&from=2026-10-12&to=2026-10-19&type=csv');check(status==200 and b'Cable drums' in body and b'Plasterboard' not in body and b'Historical Contractor' not in body,'company CSV contains only own deliveries')
+status,body,report_headers=request('/logistics-report.php?site=1&from=2026-10-12&to=2026-10-19&type=csv');check(status==200 and b'Cable drums' in body and b'Plasterboard' not in body and b'Historical Contractor' not in body,'company CSV contains only own deliveries')
+check(b'12/10/2026 09:00' in body and b'2026-10-12' not in body and '12-10-2026 to 18-10-2026.csv' in report_headers.get('Content-Disposition',''),'CSV dates and filename use UK format')
 status,body,_=request('/logistics-report.php?site=1&from=2026-10-12&to=2026-10-19&type=pdf');check(status==200 and body.startswith(b'%PDF-'),'private PDF run sheet generated')
+Path(__file__).with_name('runtime').joinpath('run-sheet-uk.pdf').write_bytes(body)
 import base64
 image=base64.b64decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/5ioAAAAASUVORK5CYII=')
 def upload(delivery):
