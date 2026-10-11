@@ -3,7 +3,7 @@ declare(strict_types=1);
 /** Shared site capacity, explicit company ownership and fresh Suite identity. */
 final class DeliverySuite {
     public static function binding(int $instance): array {
-        $path=__DIR__.'/suite.local.php';
+        $path=__DIR__.'/suite-instances.local.php';
         $bindings=is_file($path)?(static fn(string $file):mixed=>require $file)($path):[];
         $binding=is_array($bindings)?($bindings[$instance]??null):null;
         if(!is_array($binding))Logistics::error('This Suite delivery connection is unavailable.',503);
