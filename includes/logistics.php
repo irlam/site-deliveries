@@ -12,6 +12,7 @@ final class Logistics
     public static function canWrite(array $user): bool {return ($user['role']??'booker')!=='viewer';}
     public static function requireWrite(array $user): void {if(!self::canWrite($user))self::error('Viewer access is read only.',403);}
     public function site(array $user,int $id): array {
+        if(isset($user['suite_site_id'])&&$id!==$user['suite_site_id'])self::error('Suite project access denied.',403);
         $site=$this->one('SELECT * FROM logistics_sites WHERE id=? AND active=1',[$id]);
         if(!$site)self::error('Site not found.',404);
         if(!$user['admin']&&!$this->one('SELECT 1 FROM logistics_memberships WHERE user_id=? AND site_id=?',[$user['id'],$id]))self::error('Site access denied.',403);
@@ -25,6 +26,7 @@ final class Logistics
     }
     public function context(array $u): array {
         $sites=$u['admin']?$this->rows('SELECT * FROM logistics_sites WHERE active=1 ORDER BY name'):$this->rows('SELECT s.* FROM logistics_sites s JOIN logistics_memberships m ON m.site_id=s.id WHERE m.user_id=? AND s.active=1 ORDER BY s.name',[$u['id']]);
+        if(isset($u['suite_site_id']))$sites=array_values(array_filter($sites,static fn(array $site):bool=>(int)$site['id']===$u['suite_site_id']));
         $ids=array_map('intval',array_column($sites,'id'));$in=$ids?implode(',',$ids):'0';
         return ['user'=>['id'=>$u['id'],'name'=>$u['name'],'admin'=>$u['admin'],'company_id'=>$u['company_id'],'can_write'=>self::canWrite($u)], 'sites'=>$sites,'gates'=>$this->rows("SELECT * FROM logistics_gates WHERE active=1 AND site_id IN ($in) ORDER BY name"),'resources'=>$this->rows("SELECT * FROM logistics_resources WHERE active=1 AND site_id IN ($in) ORDER BY name"),'links'=>$this->rows("SELECT l.* FROM logistics_gate_resources l JOIN logistics_gates g ON g.id=l.gate_id WHERE g.site_id IN ($in)"),'companies'=>$u['admin']?$this->rows('SELECT * FROM logistics_companies WHERE active=1 ORDER BY name'):$this->rows('SELECT * FROM logistics_companies WHERE id=? AND active=1',[$u['company_id']])];
     }

@@ -6,7 +6,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
     try{logistics_write_check();if(($_SESSION['login_wait_until']??0)>time())Logistics::error('Please wait a minute before trying again.',403);
         $s=$pdo->prepare('SELECT u.*,c.active AS company_active FROM logistics_users u JOIN logistics_companies c ON c.id=u.company_id WHERE u.email=?');$s->execute([strtolower(trim((string)($_POST['email']??'')))]);$u=$s->fetch(PDO::FETCH_ASSOC);
         if(!$u||!(int)$u['active']||!(int)$u['company_active']||!password_verify((string)($_POST['password']??''),$u['password_hash'])){$_SESSION['login_attempts']=($_SESSION['login_attempts']??0)+1;if($_SESSION['login_attempts']>=5){$_SESSION['login_wait_until']=time()+60;$_SESSION['login_attempts']=0;}Logistics::error('Email or password not recognised.',401);}
-        session_regenerate_id(true);unset($_SESSION['admin_id'],$_SESSION['login_attempts'],$_SESSION['login_wait_until']);$_SESSION['logistics_user_id']=(int)$u['id'];header('Location: /schedule.php');exit;
+        DeliverySuite::logout();session_regenerate_id(true);unset($_SESSION['admin_id'],$_SESSION['login_attempts'],$_SESSION['login_wait_until']);$_SESSION['logistics_user_id']=(int)$u['id'];header('Location: /schedule.php');exit;
     }catch(Throwable $e){$error=$e->getMessage();}
 }
 function le(string $s): string{return htmlspecialchars($s,ENT_QUOTES,'UTF-8');}

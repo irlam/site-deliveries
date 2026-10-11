@@ -1,12 +1,14 @@
 <?php
 declare(strict_types=1);
 require_once __DIR__.'/logistics.php';
+require_once __DIR__.'/delivery-suite.php';
 function logistics_start_session(): void {if(session_status()===PHP_SESSION_ACTIVE)return;ini_set('session.use_strict_mode','1');session_set_cookie_params(['lifetime'=>0,'path'=>'/','secure'=>!empty($_SERVER['HTTPS'])&&$_SERVER['HTTPS']!=='off','httponly'=>true,'samesite'=>'Lax']);session_start();}
 function logistics_enabled(PDO $pdo): bool {
     try{$s=$pdo->query("SELECT value FROM app_settings WHERE `key`='logistics_enabled'");return $s->fetchColumn()==='1';}catch(PDOException){return false;}
 }
 function logistics_user(PDO $pdo): array {
     logistics_start_session();
+    if(isset($_SESSION['delivery_suite']))return DeliverySuite::current($pdo);
     if(isset($_SESSION['admin_id'])){
         $s=$pdo->prepare('SELECT id,email,is_active FROM admins WHERE id=?');$s->execute([(int)$_SESSION['admin_id']]);$a=$s->fetch(PDO::FETCH_ASSOC);
         if($a&&(int)$a['is_active'])return ['id'=>(int)$a['id'],'name'=>$a['email'],'admin'=>true,'company_id'=>null];

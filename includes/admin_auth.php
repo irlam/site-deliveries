@@ -56,7 +56,11 @@ function admin_login(PDO $pdo, string $email, string $password): ?array {
 
     if (!password_verify($password, (string)$row['password_hash'])) return null;
 
-    // OK: set session
+    require_once __DIR__ . '/logistics.php';
+    require_once __DIR__ . '/delivery-suite.php';
+    DeliverySuite::logout();
+    session_regenerate_id(true);
+    unset($_SESSION['logistics_user_id'], $_SESSION['delivery_pending']);
     $_SESSION['admin_id'] = (int)$row['id'];
 
     // record last_login
